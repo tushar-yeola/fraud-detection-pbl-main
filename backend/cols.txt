@@ -1,0 +1,16 @@
+TransactionID
+AccountID
+TransactionAmount
+TransactionDate
+TransactionType
+Location
+DeviceID
+IP Address
+MerchantID
+Channel
+CustomerAge
+CustomerOccupation
+TransactionDuration
+LoginAttempts
+AccountBalance
+PreviousTransactionDate

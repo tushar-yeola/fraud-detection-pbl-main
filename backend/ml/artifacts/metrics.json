@@ -1,0 +1,59 @@
+{
+  "best_model": "random_forest",
+  "feature_names": [
+    "TransactionAmount",
+    "TransactionType",
+    "Location",
+    "Channel",
+    "CustomerAge",
+    "CustomerOccupation",
+    "TransactionDuration",
+    "LoginAttempts",
+    "AccountBalance",
+    "hour",
+    "day_of_week",
+    "month",
+    "is_weekend",
+    "is_night",
+    "days_since_last_txn"
+  ],
+  "models": {
+    "logistic_regression": {
+      "auc_roc": 0.9086,
+      "f1": 0.5806,
+      "precision": 0.4737,
+      "recall": 0.75,
+      "avg_precision": 0.7365
+    },
+    "random_forest": {
+      "auc_roc": 0.9579,
+      "f1": 0.8136,
+      "precision": 0.8276,
+      "recall": 0.8,
+      "avg_precision": 0.8497
+    }
+  },
+  "feature_importances": {
+    "TransactionAmount": 0.24064536590723687,
+    "LoginAttempts": 0.23695879814183735,
+    "AccountBalance": 0.23286511876671273,
+    "CustomerAge": 0.04970102167786987,
+    "TransactionDuration": 0.041353077066415694,
+    "Location": 0.03613770323889657,
+    "day_of_week": 0.03535733736536547,
+    "TransactionType": 0.0326406955805321,
+    "hour": 0.029944861637939545,
+    "month": 0.02855337796693398,
+    "CustomerOccupation": 0.02318435603457198,
+    "Channel": 0.012658286615687839,
+    "is_weekend": 0.0,
+    "is_night": 0.0,
+    "days_since_last_txn": 0.0
+  },
+  "data_info": {
+    "total_samples": 2512,
+    "fraud_samples": 302,
+    "legit_samples": 2210,
+    "fraud_rate": 12.02
+  }
+}

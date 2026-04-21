@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pandas
+numpy
+scikit-learn
+imbalanced-learn
+joblib
+python-multipart
+aiofiles
+python-jose[cryptography]
+passlib[bcrypt]
+pydantic
+pydantic-settings
+httpx
