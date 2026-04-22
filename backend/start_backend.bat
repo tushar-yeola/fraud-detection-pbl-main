@@ -1,6 +1,6 @@
 @echo off
 echo ===============================================
-echo   FraudShield Backend Startup
+echo   TransactGuard Backend Startup
 echo ===============================================
 
 cd /d "%~dp0"

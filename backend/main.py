@@ -21,7 +21,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -57,41 +57,19 @@ def model_info():
         return {"error": str(e), "message": "Model not trained yet. Run ml/train.py first."}
 
 
-@app.post("/api/predict/batch")
-async def batch_predict(file: UploadFile = File(...)):
-    contents = await file.read()
-    
+def process_batch_task(contents: bytes):
     from models.db import SessionLocal
     db = SessionLocal()
-    
-    results = []
-    fraud_detected = 0
-    total = 0
-    
     try:
         df = pd.read_csv(io.StringIO(contents.decode('utf-8')))
-        total = len(df)
         
         objects = []
-        for i, row in df.iterrows():
+        for _, row in df.iterrows():
             raw = row.to_dict()
             try:
                 pred = predict_transaction(raw)
-            except Exception as e:
-                # Default empty prediction on failure
-                pred = {"is_fraud": False, "fraud_probability": 0.0, "rf_probability": 0.0, "lr_probability": 0.0, "risk_level": "LOW", "fraud_reasons": []}
-
-            if pred.get('is_fraud'):
-                fraud_detected += 1
-                
-            results.append({
-                "row": raw.get('TransactionID', str(i)),
-                "is_fraud": pred.get('is_fraud', False),
-                "rf_probability": pred.get('rf_probability', 0.0),
-                "lr_probability": pred.get('lr_probability', 0.0),
-                "fraud_probability": pred.get('fraud_probability', 0.0),
-                "risk_level": pred.get('risk_level', 'LOW')
-            })
+            except:
+                pred = {"is_fraud": False, "fraud_probability": 0.0, "risk_level": "LOW", "fraud_reasons": []}
 
             tx_date = datetime.utcnow()
             if 'TransactionDate' in raw:
@@ -114,9 +92,9 @@ async def batch_predict(file: UploadFile = File(...)):
                 transaction_duration=int(raw.get('TransactionDuration', 0)),
                 login_attempts=int(raw.get('LoginAttempts', 1)),
                 transaction_date=tx_date,
-                is_fraud=pred.get('is_fraud', False),
-                fraud_probability=pred.get('fraud_probability', 0.0),
-                risk_level=pred.get('risk_level', 'LOW'),
+                is_fraud=pred['is_fraud'],
+                fraud_probability=pred['fraud_probability'],
+                risk_level=pred['risk_level'],
                 fraud_reasons="|".join(pred.get('fraud_reasons', []))
             )
             objects.append(db_tx)
@@ -125,14 +103,12 @@ async def batch_predict(file: UploadFile = File(...)):
         db.commit()
     except Exception as e:
         print("Batch processing error:", e)
-        return {"total": 0, "fraud_detected": 0, "fraud_rate": 0, "results": [], "error": str(e)}
     finally:
         db.close()
 
-    fraud_rate = round((fraud_detected / total * 100), 2) if total > 0 else 0
-    return {
-        "total": total,
-        "fraud_detected": fraud_detected,
-        "fraud_rate": fraud_rate,
-        "results": results
-    }
+
+@app.post("/api/predict/batch")
+async def batch_predict(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+    contents = await file.read()
+    background_tasks.add_task(process_batch_task, contents)
+    return {"message": "Batch predicting started in the background. Please check alerts momentarily."}

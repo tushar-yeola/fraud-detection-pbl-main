@@ -707,5 +707,120 @@ input, select, textarea { font-family: inherit; }
   border: 1px solid var(--border) !important;
   border-radius: var(--radius-sm) !important;
   box-shadow: var(--shadow) !important;
-  color: var(--text-primary) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE DESIGN
+═══════════════════════════════════════════════ */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  padding: 8px;
+  cursor: pointer;
+  margin-right: 4px;
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Sidebar Drawer */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 50;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.8);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(11, 17, 32, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 40;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  
+  .sidebar-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Top Bar */
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .desktop-shield-icon {
+    display: none;
+  }
+
+  .top-bar {
+    padding: 0 16px;
+    gap: 8px;
+  }
+
+  .top-bar-title {
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .top-bar-subtitle {
+    display: none;
+  }
+
+  /* Page Content */
+  .page-content {
+    padding: 16px;
+  }
+
+  /* Grids */
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .charts-grid, .charts-grid.three, .charts-grid.wide {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Cards */
+  .card {
+    padding: 16px;
+  }
+
+  /* specific to search filters */
+  .search-bar { max-width: none; }
+  .card-header { flex-wrap: wrap; }
+  .card-header > div:last-child {
+    width: 100%;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
 }

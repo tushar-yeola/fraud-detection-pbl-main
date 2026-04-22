@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom'
-import { LayoutDashboard, ShieldAlert, List, Search, UploadCloud, BarChart2, Cpu, Shield } from 'lucide-react'
+import { LayoutDashboard, ShieldAlert, List, Search, UploadCloud, BarChart2, Cpu, Shield, Menu, X } from 'lucide-react'
 import Dashboard from './pages/Dashboard.jsx'
 import Analytics from './pages/Analytics.jsx'
 import Transactions from './pages/Transactions.jsx'
@@ -28,16 +28,24 @@ function PageTitle() {
     '/check': 'Check Transaction', '/batch': 'Batch Upload',
     '/alerts': 'Fraud Alerts', '/model': 'Model Info'
   }
-  return <span>{map[loc.pathname] || 'FraudShield'}</span>
+  return <span>{map[loc.pathname] || 'TransactGuard'}</span>
 }
 
-function Sidebar({ alertCount }) {
+function Sidebar({ alertCount, isOpen, onClose }) {
+  const loc = useLocation()
+  
+  React.useEffect(() => {
+    onClose()
+  }, [loc.pathname])
+
   return (
-    <aside className="sidebar">
-      <div className="sidebar-logo">
+    <>
+      <div className={`sidebar-overlay ${isOpen ? 'show' : ''}`} onClick={onClose} />
+      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+        <div className="sidebar-logo">
         <div className="logo-icon">🛡️</div>
         <div>
-          <div className="logo-text">FraudShield</div>
+          <div className="logo-text">TransactGuard</div>
           <div className="logo-sub">AI Fraud Detection</div>
         </div>
       </div>
@@ -64,13 +72,15 @@ function Sidebar({ alertCount }) {
           <div className="status-dot" />
           <span style={{ color: '#64748b' }}>API Connected</span>
         </div>
-      </div>
-    </aside>
+        </div>
+      </aside>
+    </>
   )
 }
 
 export default function App() {
   const [alertCount, setAlertCount] = React.useState(0)
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false)
 
   React.useEffect(() => {
     fetch('/api/alerts?resolved=false&limit=1')
@@ -82,10 +92,13 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="app-layout">
-        <Sidebar alertCount={alertCount} />
+        <Sidebar alertCount={alertCount} isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         <div className="main-content">
           <header className="top-bar">
-            <Shield size={20} style={{ color: 'var(--accent-blue)' }} />
+            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+              <Menu size={20} />
+            </button>
+            <Shield size={20} className="desktop-shield-icon" style={{ color: 'var(--accent-blue)' }} />
             <div className="top-bar-title">
               <PageTitle />
               <span className="top-bar-subtitle">Banking Fraud Detection System</span>
